@@ -11,9 +11,9 @@ import net.minecraft.client.gui.screen.Screen;
 @Mixin(Screen.class)
 public abstract class MixinScreen extends AbstractParentElement
 {
-    @Inject(method = "renderBackground(Lnet/minecraft/client/util/math/MatrixStack;)V", at = @At("RETURN"))
-    protected void onDrawDefaultBackgroundPost(net.minecraft.client.util.math.MatrixStack matrixStack, CallbackInfo ci)
+    @Inject(method = "renderBackground()V", at = @At("RETURN"))
+    protected void onDrawDefaultBackgroundPost(CallbackInfo ci)
     {
-        RenderEventHandler.instance().onDrawBackgroundPost(matrixStack);
+        RenderEventHandler.instance().onDrawBackgroundPost();
     }
 }
