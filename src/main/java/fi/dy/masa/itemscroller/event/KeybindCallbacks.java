@@ -33,8 +33,7 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
 
     protected int massCraftTicker;
 
-    public static KeybindCallbacks getInstance()
-    {
+    public static KeybindCallbacks getInstance() {
         return INSTANCE;
     }
 
@@ -50,8 +49,7 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
                 .setCallback(new KeyCallbackToggleBooleanConfigWithMessage(Configs.Generic.MASS_CRAFT_HOLD));
     }
 
-    public boolean functionalityEnabled()
-    {
+    public boolean functionalityEnabled() {
         return Configs.Generic.MOD_MAIN_TOGGLE.getBooleanValue();
     }
 
@@ -68,23 +66,20 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
             return false;
         }
 
-        if (key == Hotkeys.TOGGLE_MOD_ON_OFF.getKeybind())
-        {
+        if (key == Hotkeys.TOGGLE_MOD_ON_OFF.getKeybind()) {
             Configs.Generic.MOD_MAIN_TOGGLE.toggleBooleanValue();
-            String msg = this.functionalityEnabled() ? "itemscroller.message.toggled_mod_on" : "itemscroller.message.toggled_mod_off";
+            String msg = this.functionalityEnabled() ? "itemscroller.message.toggled_mod_on"
+                    : "itemscroller.message.toggled_mod_off";
             InfoUtils.showGuiOrInGameMessage(Message.MessageType.INFO, msg);
             return true;
-        }
-        else if (key == Hotkeys.OPEN_CONFIG_GUI.getKeybind())
-        {
+        } else if (key == Hotkeys.OPEN_CONFIG_GUI.getKeybind()) {
             GuiBase.openGui(new GuiConfigs());
             return true;
         }
 
         if (this.functionalityEnabled() == false ||
-            (GuiUtils.getCurrentScreen() instanceof HandledScreen) == false ||
-            Configs.GUI_BLACKLIST.contains(GuiUtils.getCurrentScreen().getClass().getName()))
-        {
+                (GuiUtils.getCurrentScreen() instanceof HandledScreen) == false ||
+                Configs.GUI_BLACKLIST.contains(GuiUtils.getCurrentScreen().getClass().getName())) {
             return false;
         }
 
@@ -98,55 +93,37 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
                 final int mouseX = fi.dy.masa.malilib.util.InputUtils.getMouseX();
                 final int mouseY = fi.dy.masa.malilib.util.InputUtils.getMouseY();
                 return InventoryUtils.dragMoveItems(gui, moveAction, mouseX, mouseY, true);
-            }
-            else if (key == Hotkeys.KEY_MOVE_EVERYTHING.getKeybind())
-            {
+            } else if (key == Hotkeys.KEY_MOVE_EVERYTHING.getKeybind()) {
                 InventoryUtils.tryMoveStacks(slot, gui, false, true, false);
                 return true;
-            }
-            else if (key == Hotkeys.DROP_ALL_MATCHING.getKeybind())
-            {
+            } else if (key == Hotkeys.DROP_ALL_MATCHING.getKeybind()) {
                 if (Configs.Toggles.DROP_MATCHING.getBooleanValue() &&
-                    Configs.GUI_BLACKLIST.contains(gui.getClass().getName()) == false &&
-                    slot.hasStack())
-                {
+                        Configs.GUI_BLACKLIST.contains(gui.getClass().getName()) == false &&
+                        slot.hasStack()) {
                     InventoryUtils.dropStacks(gui, slot.getStack(), slot, true);
                     return true;
                 }
             }
         }
 
-        if (key == Hotkeys.CRAFT_EVERYTHING.getKeybind())
-        {
+        if (key == Hotkeys.CRAFT_EVERYTHING.getKeybind()) {
             InventoryUtils.craftEverythingPossibleWithCurrentRecipe(recipes.getSelectedRecipe(), gui);
             return true;
-        }
-        else if (key == Hotkeys.THROW_CRAFT_RESULTS.getKeybind())
-        {
+        } else if (key == Hotkeys.THROW_CRAFT_RESULTS.getKeybind()) {
             InventoryUtils.throwAllCraftingResultsToGround(recipes.getSelectedRecipe(), gui);
             return true;
-        }
-        else if (key == Hotkeys.MOVE_CRAFT_RESULTS.getKeybind())
-        {
+        } else if (key == Hotkeys.MOVE_CRAFT_RESULTS.getKeybind()) {
             InventoryUtils.moveAllCraftingResultsToOtherInventory(recipes.getSelectedRecipe(), gui);
             return true;
-        }
-        else if (key == Hotkeys.STORE_RECIPE.getKeybind())
-        {
-            if (InputUtils.isRecipeViewOpen() && InventoryUtils.isCraftingSlot(gui, slot))
-            {
+        } else if (key == Hotkeys.STORE_RECIPE.getKeybind()) {
+            if (InputUtils.isRecipeViewOpen() && InventoryUtils.isCraftingSlot(gui, slot)) {
                 recipes.storeCraftingRecipeToCurrentSelection(slot, gui, true);
                 return true;
             }
-        }
-        else if (key == Hotkeys.VILLAGER_TRADE_FAVORITES.getKeybind())
-        {
+        } else if (key == Hotkeys.VILLAGER_TRADE_FAVORITES.getKeybind()) {
             return InventoryUtils.villagerTradeEverythingPossibleWithAllFavoritedTrades();
-        }
-        else if (key == Hotkeys.SLOT_DEBUG.getKeybind())
-        {
-            if (slot != null)
-            {
+        } else if (key == Hotkeys.SLOT_DEBUG.getKeybind()) {
+            if (slot != null) {
                 InventoryUtils.debugPrintSlotInfo(gui, slot);
             } else {
                 ItemScroller.logger.info("GUI class: {}", gui.getClass().getName());
@@ -159,10 +136,8 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
     }
 
     @Override
-    public void onClientTick(MinecraftClient mc)
-    {
-        if (this.functionalityEnabled() == false || mc.player == null)
-        {
+    public void onClientTick(MinecraftClient mc) {
+        if (this.functionalityEnabled() == false || mc.player == null) {
             return;
         }
 
@@ -172,36 +147,32 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
                 && (Hotkeys.MASS_CRAFT.getKeybind().isKeybindHeld()
                         || Configs.Generic.MASS_CRAFT_HOLD.getBooleanValue())) {
 
-            if (++this.massCraftTicker < Configs.Generic.MASS_CRAFT_INTERVAL.getIntegerValue())
-            {
+            if (++this.massCraftTicker < Configs.Generic.MASS_CRAFT_INTERVAL.getIntegerValue()) {
                 return;
             }
-
 
             Screen guiScreen = GuiUtils.getCurrentScreen();
             HandledScreen<?> gui = (HandledScreen<?>) guiScreen;
             Slot outputSlot = CraftingHandler.getFirstCraftingOutputSlotForGui(gui);
 
             if (outputSlot != null) {
-                for (int j = 0; j < Configs.Generic.MASS_CRAFT_MULTIPLIER.getIntegerValue(); j++) {
-                    RecipePattern recipe = RecipeStorage.getInstance().getSelectedRecipe();
+                RecipePattern recipe = RecipeStorage.getInstance().getSelectedRecipe();
 
-                    CraftingRecipe bookRecipe = InventoryUtils.getBookRecipeFromPattern(recipe);
-                    if (bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
-                        // System.out.println("recipe");
-                        mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, true);
-                    } else {
-                        // System.out.println("move");
-                        InventoryUtils.tryMoveItemsToFirstCraftingGrid(recipe, gui, true);
-                    }
-
-                    for (int i = 0; i < recipe.getMaxCraftAmount(); i++) {
-                        InventoryUtils.dropStack(gui, outputSlot.id);
-                    }
-
-                    InventoryUtils.tryClearCursor(gui);
-                    InventoryUtils.throwAllCraftingResultsToGround(recipe, gui);
+                CraftingRecipe bookRecipe = InventoryUtils.getBookRecipeFromPattern(recipe);
+                if (bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
+                    // System.out.println("recipe");
+                    mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, true);
+                } else {
+                    // System.out.println("move");
+                    InventoryUtils.tryMoveItemsToFirstCraftingGrid(recipe, gui, true);
                 }
+
+                for (int i = 0; i < recipe.getMaxCraftAmount(); i++) {
+                    InventoryUtils.dropStack(gui, outputSlot.id);
+                }
+
+                InventoryUtils.tryClearCursor(gui);
+                InventoryUtils.throwAllCraftingResultsToGround(recipe, gui);
             }
 
             this.massCraftTicker = 0;
