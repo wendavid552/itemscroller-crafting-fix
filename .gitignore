@@ -5,6 +5,7 @@ build/
 eclipse/
 .classpath
 .project
+.vscode
 build.number
 run/
 .DS_Store
