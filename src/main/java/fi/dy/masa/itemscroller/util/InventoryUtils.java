@@ -34,7 +34,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeManager;
@@ -43,31 +42,12 @@ import net.minecraft.screen.Generic3x3ContainerScreenHandler;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.screen.slot.TradeOutputSlot;
 import net.minecraft.util.Identifier;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
-import fi.dy.masa.itemscroller.mixin.IMixinCraftingResultSlot;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntComparator;
-import fi.dy.masa.malilib.util.GuiUtils;
-
-import fi.dy.masa.itemscroller.ItemScroller;
-import fi.dy.masa.itemscroller.config.Configs;
-import fi.dy.masa.itemscroller.config.Hotkeys;
-import fi.dy.masa.itemscroller.mixin.IMixinCraftingResultSlot;
-import fi.dy.masa.itemscroller.recipes.CraftingHandler;
-import fi.dy.masa.itemscroller.recipes.CraftingHandler.SlotRange;
-import fi.dy.masa.itemscroller.recipes.RecipePattern;
-import fi.dy.masa.itemscroller.recipes.RecipeStorage;
-import fi.dy.masa.itemscroller.villager.VillagerDataStorage;
-import fi.dy.masa.itemscroller.villager.VillagerUtils;
-import fi.dy.masa.malilib.util.GuiUtils;
 
 public class InventoryUtils {
     private static final Set<Integer> DRAGGED_SLOTS = new HashSet<>();
@@ -81,11 +61,6 @@ public class InventoryUtils {
     private static int lastPosX;
     private static int lastPosY;
     private static int slotNumberLast;
-    private static boolean inhibitCraftResultUpdate;
-
-    public static void setInhibitCraftingOutputUpdate(boolean inhibitUpdate) {
-        inhibitCraftResultUpdate = inhibitUpdate;
-    }
 
     public static String getStackString(ItemStack stack) {
         if (isStackEmpty(stack) == false) {
@@ -1465,8 +1440,6 @@ public class InventoryUtils {
             IntArrayList toRemove = new IntArrayList();
             boolean movedSomething = false;
 
-            setInhibitCraftingOutputUpdate(true);
-
             for (int i = 0, slotNum = range.getFirst(); i < rangeSlots && slotNum < invSlots; i++, slotNum++) {
                 Slot slotTmp = gui.getScreenHandler().getSlot(slotNum);
                 ItemStack recipeStack = recipeItems[i];
@@ -1496,8 +1469,6 @@ public class InventoryUtils {
                     dropStack(gui, slotNum);
                 }
             }
-
-            setInhibitCraftingOutputUpdate(false);
 
             if (movedSomething) {
                 // updateCraftingOutputSlot(outputSlot);
