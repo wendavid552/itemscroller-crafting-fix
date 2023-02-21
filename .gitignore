@@ -5,6 +5,7 @@ build/
 eclipse/
 .classpath
 .project
+.idea
 .vscode
 build.number
 run/
