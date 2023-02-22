@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import fi.dy.masa.itemscroller.ItemScroller;
 import fi.dy.masa.itemscroller.config.Configs;
 import fi.dy.masa.itemscroller.config.Hotkeys;
+import fi.dy.masa.itemscroller.mixin.IMixinAnvilScreen;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler.SlotRange;
 import fi.dy.masa.itemscroller.recipes.RecipePattern;
@@ -22,13 +23,11 @@ import fi.dy.masa.itemscroller.villager.VillagerUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.gui.screen.ingame.MerchantScreen;
+import net.minecraft.client.gui.screen.ingame.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -36,6 +35,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.Generic3x3ContainerScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -52,6 +52,7 @@ import net.minecraft.world.World;
 import fi.dy.masa.itemscroller.mixin.IMixinCraftingResultSlot;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import org.apache.commons.lang3.StringUtils;
 
 public class InventoryUtils {
     private static final Set<Integer> DRAGGED_SLOTS = new HashSet<>();
@@ -1350,19 +1351,25 @@ public class InventoryUtils {
             SlotRange range = CraftingHandler.getCraftingGridSlots(gui, slot);
 
             if (range != null) {
-
+                String cacheName = null;
                 for (int i = 0; i < 36; i++) {
                     CraftingRecipe bookRecipe = getBookRecipeFromPattern(recipe);
                     if (bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
                         MinecraftClient mc = MinecraftClient.getInstance();
                         mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, true);
                     } else {
+                        if(cacheName == null && gui instanceof AnvilScreen) {
+                            cacheName = ((IMixinAnvilScreen)gui).itemscroller_getNameField().getText();
+                        }
                         // Clear all items from the grid first, to avoid unbalanced stacks
                         if (clearCraftingGridOfItems(recipe, gui, range, false) == false) {
                             continue;
                         }
 
                         tryMoveItemsToCraftingGridSlots(recipe, slot, gui, true);
+                    }
+                    if(!StringUtils.isBlank(cacheName) && gui instanceof AnvilScreen) {
+                        ((IMixinAnvilScreen)gui).itemscroller_setItemName(cacheName);
                     }
                     shiftClickSlot(gui, slot.id);
                 }
@@ -1622,10 +1629,10 @@ public class InventoryUtils {
 
         for (Slot slot : container.slots) {
             if (areSlotsInSameInventory(slot, slotReference) == false && slot.hasStack()
-                    && areStacksEqual(stackReference, slot.getStack())) {
+                    && areStacksEqual(stackReference, slot.getStack()) && !(slot.inventory instanceof CraftingResultInventory)) {
                 int stackSize = getStackSize(slot.getStack());
-
-                if (stackSize > largest) {
+                // 这个stack应该是legal的，也就是我们强行忽略掉overstacked items
+                if (stackSize > largest && stackSize <= slot.getStack().getMaxCount()) {
                     slotNum = slot.id;
                     largest = stackSize;
                 }
