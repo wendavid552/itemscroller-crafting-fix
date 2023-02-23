@@ -1495,6 +1495,13 @@ public class InventoryUtils {
         }
     }
 
+    /**
+     * Check whether the player has enough items in their inventory
+     * to craft the given recipe even after an extra crafting step.
+     * For example, if the recipe requires 2 stone items, thus we cannot craft it with exactly 2 stone items left,
+     * as after the single crafting we could not pick up another stone item if the inventory is full.
+     * @param recipe The recipe to be crafted
+     */
     public static int checkRecipeEnough(RecipePattern recipe, HandledScreen<? extends ScreenHandler> gui) {
         Slot craftingOutputSlot = CraftingHandler.getFirstCraftingOutputSlotForGui(gui);
         ScreenHandler container = gui.getScreenHandler();
@@ -1509,23 +1516,18 @@ public class InventoryUtils {
             Map<ItemType, IntArrayList> ingredientSlots = ItemType.getSlotsPerItem(recipe.getRecipeItems());
             Slot[] slotReference = {container.getSlot(range.getFirst()), craftingOutputSlot};
             for(Map.Entry<ItemType, IntArrayList> entry : ingredientSlots.entrySet()) {
-                int count = 0;
                 int numSlotsWithItem = entry.getValue().size();
+                int countItems = 0, countSlots = 0;
                 ItemStack stackReference = entry.getKey().getStack();
                 for(Slot slot : container.slots) {
                     if(!areSlotsInSameInventory(slot, slotReference) && slot.hasStack()
                             && areStacksEqual(stackReference, slot.getStack())){
-                        ++count;
-                        if(count > numSlotsWithItem) {
-                            break;
-                        }
+                        countItems += slot.getStack().getCount();
+                        ++countSlots;
                     }
                 }
-                if(count < numSlotsWithItem) {
-                    return 0;
-                }
-                else if (count == numSlotsWithItem) {
-                    return 1;
+                if(countSlots <= numSlotsWithItem && countItems % numSlotsWithItem == 0) {
+                    return countItems == numSlotsWithItem ? 0 : 1;
                 }
             }
             return 2;
