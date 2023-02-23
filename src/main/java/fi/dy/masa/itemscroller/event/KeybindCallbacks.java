@@ -190,7 +190,6 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
                     RecipePattern recipe = RecipeStorage.getInstance().getSelectedRecipe();
 
                     CraftingRecipe bookRecipe = InventoryUtils.getBookRecipeFromPattern(recipe);
-                    int stonecuttingRecipeIndex = InventoryUtils.getStonecuttingRecipeFromPattern(recipe);
                     if (!(gui instanceof StonecutterScreen) && bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
                         // System.out.println("recipe");
                         if(Configs.Toggles.RESERVED_CRAFTING.getBooleanValue()) {
@@ -205,6 +204,7 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
                     }
                     else {
                         InventoryUtils.tryMoveItemsToFirstCraftingGrid(recipe, gui, true);
+                        int stonecuttingRecipeIndex = InventoryUtils.getStonecuttingRecipeFromPattern(recipe);
                         if(stonecuttingRecipeIndex != -1 && gui instanceof StonecutterScreen) {
                             mc.interactionManager.clickButton((gui.getScreenHandler()).syncId, stonecuttingRecipeIndex);
                         }
