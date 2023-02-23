@@ -195,9 +195,10 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
                         InventoryUtils.tryMoveItemsToFirstCraftingGrid(recipe, gui, true);
                     }
 
-                    for (int i = 0; i < recipe.getMaxCraftAmount(); i++) {
-                        InventoryUtils.dropStack(gui, outputSlot.id);
-                    }
+//                    for (int i = 0; i < recipe.getMaxCraftAmount(); i++) {
+//                        InventoryUtils.dropStack(gui, outputSlot.id);
+//                    }
+                    InventoryUtils.dropItem(gui, outputSlot.id);
 
                     InventoryUtils.tryClearCursor(gui);
                     InventoryUtils.throwAllCraftingResultsToGround(recipe, gui);
