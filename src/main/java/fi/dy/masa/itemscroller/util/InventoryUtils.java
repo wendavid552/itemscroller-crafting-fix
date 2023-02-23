@@ -1495,6 +1495,46 @@ public class InventoryUtils {
         }
     }
 
+    /**
+     * Check whether the player has enough items in their inventory
+     * to craft the given recipe even after an extra crafting step.
+     * For example, if the recipe requires 2 stone items, thus we cannot craft it with exactly 2 stone items left,
+     * as after the single crafting we could not pick up another stone item if the inventory is full.
+     * @param recipe The recipe to be crafted
+     */
+    public static int checkRecipeEnough(RecipePattern recipe, HandledScreen<? extends ScreenHandler> gui) {
+        Slot craftingOutputSlot = CraftingHandler.getFirstCraftingOutputSlotForGui(gui);
+        ScreenHandler container = gui.getScreenHandler();
+        int numSlots = container.slots.size();
+        SlotRange range = CraftingHandler.getCraftingGridSlots(gui, craftingOutputSlot);
+
+        // Check that the slot range is valid and that the recipe can fit into this type
+        // of crafting grid
+        if (range != null && range.getLast() < numSlots && recipe.getRecipeLength() <= range.getSlotCount()) {
+            // This slot is used to check that we get items from a DIFFERENT inventory than
+            // where this slot is in
+            Map<ItemType, IntArrayList> ingredientSlots = ItemType.getSlotsPerItem(recipe.getRecipeItems());
+            Slot[] slotReference = {container.getSlot(range.getFirst()), craftingOutputSlot};
+            for(Map.Entry<ItemType, IntArrayList> entry : ingredientSlots.entrySet()) {
+                int countItems = 0;
+                final int numSlotsWithItem = entry.getValue().size();
+                final ItemStack stackReference = entry.getKey().getStack();
+                final int itemsCraftOnce = numSlotsWithItem * stackReference.getMaxCount();
+                for(Slot slot : container.slots) {
+                    if(!areSlotsInSameInventory(slot, slotReference) && slot.hasStack()
+                            && areStacksEqual(stackReference, slot.getStack())){
+                        countItems += slot.getStack().getCount();
+                    }
+                }
+                if(countItems <= itemsCraftOnce && countItems % numSlotsWithItem == 0) {
+                    return countItems == numSlotsWithItem ? 0 : 1;
+                }
+            }
+            return 2;
+        }
+        return 0;
+    }
+
     private static int putSingleItemIntoSlots(HandledScreen<? extends ScreenHandler> gui,
             IntArrayList targetSlots,
             int startIndex) {
