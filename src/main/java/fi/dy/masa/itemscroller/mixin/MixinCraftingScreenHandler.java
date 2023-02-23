@@ -27,12 +27,7 @@ public abstract class MixinCraftingScreenHandler
 
     @Inject(method = "updateResult", at = @At("RETURN"))
     private static void onUpdateResult(
-            ScreenHandler screenHandler,
-            World world,
-            PlayerEntity player,
-            CraftingInventory craftingInv,
-            CraftingResultInventory resultInv,
-            CallbackInfo ci)
+            int syncId, World world, PlayerEntity player, CraftingInventory craftingInventory, CraftingResultInventory resultInventory, CallbackInfo ci)
     {
         //InventoryUtils.onSlotChangedCraftingGrid(player, craftingInv, resultInv);
     }

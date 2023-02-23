@@ -122,7 +122,7 @@ public class VillagerDataStorage
             return new FavoriteData(VillagerUtils.getGlobalFavoritesFor(originalTrades, this.globalFavorites), true);
         }
 
-        return new FavoriteData(IntArrayList.of(), favorites == null);
+        return new FavoriteData(IntArrayList.wrap(new int[]{}), favorites == null);
     }
 
     private void readFromNBT(NbtCompound nbt)

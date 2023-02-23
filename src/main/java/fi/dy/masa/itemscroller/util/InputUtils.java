@@ -21,7 +21,7 @@ public class InputUtils
 
     public static boolean canShiftDropItems(HandledScreen<?> gui, MinecraftClient mc, int mouseX, int mouseY)
     {
-        if (InventoryUtils.isStackEmpty(gui.getScreenHandler().getCursorStack()) == false)
+        if (InventoryUtils.isStackEmpty(mc.player.inventory.getCursorStack()) == false)
         {
             int left = AccessorUtils.getGuiLeft(gui);
             int top = AccessorUtils.getGuiTop(gui);
@@ -127,16 +127,16 @@ public class InputUtils
 
     public static boolean isAttack(int keyCode)
     {
-        return keyCode == KeybindMulti.getKeyCode(MinecraftClient.getInstance().options.attackKey);
+        return keyCode == KeybindMulti.getKeyCode(MinecraftClient.getInstance().options.keyAttack);
     }
 
     public static boolean isUse(int keyCode)
     {
-        return keyCode == KeybindMulti.getKeyCode(MinecraftClient.getInstance().options.useKey);
+        return keyCode == KeybindMulti.getKeyCode(MinecraftClient.getInstance().options.keyUse);
     }
 
     public static boolean isPickBlock(int keyCode)
     {
-        return keyCode == KeybindMulti.getKeyCode(MinecraftClient.getInstance().options.pickItemKey);
+        return keyCode == KeybindMulti.getKeyCode(MinecraftClient.getInstance().options.keyPickItem);
     }
 }
