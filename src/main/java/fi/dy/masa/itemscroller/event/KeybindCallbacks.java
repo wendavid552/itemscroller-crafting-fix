@@ -189,7 +189,9 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
                     CraftingRecipe bookRecipe = InventoryUtils.getBookRecipeFromPattern(recipe);
                     if (bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
                         // System.out.println("recipe");
-                        mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, true);
+                        if(InventoryUtils.checkRecipeExist(recipe, gui)) {
+                            mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, true);
+                        }
                     } else {
                         // System.out.println("move");
                         InventoryUtils.tryMoveItemsToFirstCraftingGrid(recipe, gui, true);
