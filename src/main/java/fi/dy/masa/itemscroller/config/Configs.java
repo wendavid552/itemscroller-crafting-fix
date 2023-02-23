@@ -65,6 +65,7 @@ public class Configs implements IConfigHandler
     public static class Toggles
     {
         public static final ConfigBoolean CRAFTING_FEATURES         = new ConfigBoolean("enableCraftingFeatures",           true, "Enables scrolling items to and from crafting grids,\nwith a built-in 18 recipe memory.\nHold down the Recipe key to see the stored recipes and\nto change the selection. While holding the Recipe key,\nyou can either scroll or press a number key to change the selection.\nA recipe is stored to the currently selected \"recipe slot\"\n by clicking pick block over a configured crafting output slot.\nThe supported crafting grids must be added to the scrollableCraftingGrids list.");
+        public static final ConfigBoolean RESERVED_CRAFTING          = new ConfigBoolean("enableReservedCrafting",          false, "Enables to reserve slots of items of recipes in inventory,\nso items on the ground could be picked up for further crafting");
         public static final ConfigBoolean DROP_MATCHING             = new ConfigBoolean("enableDropkeyDropMatching",        true, "Enables dropping all matching items from the same\ninventory with the hotkey");
         public static final ConfigBoolean RIGHT_CLICK_CRAFT_STACK   = new ConfigBoolean("enableRightClickCraftingOneStack", true, "Enables crafting up to one full stack when right clicking on\na slot that has been configured as a crafting output slot.");
         public static final ConfigBoolean SCROLL_EVERYTHING         = new ConfigBoolean("enableScrollingEverything",        true, "Enables scroll moving all items at once while\nholding the modifierMoveEverything keybind");
@@ -79,6 +80,7 @@ public class Configs implements IConfigHandler
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
                 CRAFTING_FEATURES,
+                RESERVED_CRAFTING,
                 DROP_MATCHING,
                 RIGHT_CLICK_CRAFT_STACK,
                 SCROLL_EVERYTHING,

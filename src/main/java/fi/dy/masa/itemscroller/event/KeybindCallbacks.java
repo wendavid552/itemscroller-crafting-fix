@@ -193,9 +193,14 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
                     int stonecuttingRecipeIndex = InventoryUtils.getStonecuttingRecipeFromPattern(recipe);
                     if (!(gui instanceof StonecutterScreen) && bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
                         // System.out.println("recipe");
-                        int option = InventoryUtils.checkRecipeEnough(recipe, gui);
-                        if(option > 0) {
-                            mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, option > 1);
+                        if(Configs.Toggles.RESERVED_CRAFTING.getBooleanValue()) {
+                            int option = InventoryUtils.checkRecipeEnough(recipe, gui);
+                            if (option > 0) {
+                                mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, option > 1);
+                            }
+                        }
+                        else{
+                            mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, true);
                         }
                     }
                     else {
