@@ -232,7 +232,7 @@ public class RenderEventHandler
 
         for (int i = 0, row = 0; row < recipeDimensions; row++)
         {
-            for (int col = 0; col < recipeDimensions; col++, i++)
+            for (int col = 0; col < recipeDimensions && i < recipe.getRecipeLength(); col++, i++)
             {
                 int xOff = col * 17;
                 int yOff = row * 17;
@@ -255,7 +255,7 @@ public class RenderEventHandler
         {
             for (int i = 0, row = 0; row < recipeDimensions; row++)
             {
-                for (int col = 0; col < recipeDimensions; col++, i++)
+                for (int col = 0; col < recipeDimensions && i < recipe.getRecipeLength(); col++, i++)
                 {
                     int xOff = col * scaledGridEntry;
                     int yOff = row * scaledGridEntry;
