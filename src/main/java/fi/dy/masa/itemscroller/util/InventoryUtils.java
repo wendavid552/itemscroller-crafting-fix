@@ -1339,8 +1339,8 @@ public class InventoryUtils {
         return null;
     }
 
-    public static StonecuttingRecipe getStonecuttingRecipeFromPattern(RecipePattern recipe) {
-        if(recipe.cachedRecipeFromStonecutting != null) {
+    public static int getStonecuttingRecipeFromPattern(RecipePattern recipe) {
+        if(recipe.cachedRecipeFromStonecutting != -1) {
             return recipe.cachedRecipeFromStonecutting;
         }
         else {
@@ -1354,14 +1354,15 @@ public class InventoryUtils {
                 search.setStack(i, items[i]);
             }
             List<StonecuttingRecipe> inputRecipes = recipeManager.getAllMatches(RecipeType.STONECUTTING, search, mc.world);
-            for(StonecuttingRecipe inputRecipe : inputRecipes) {
+            for(int i=0; i<inputRecipes.size(); ++i) {
+                StonecuttingRecipe inputRecipe = inputRecipes.get(i);
                 if(inputRecipe.getOutput().getItem() == recipe.getResult().getItem()) {
-                    recipe.cachedRecipeFromStonecutting = inputRecipe;
-                    return inputRecipe;
+                    recipe.cachedRecipeFromStonecutting = i;
+                    return recipe.cachedRecipeFromStonecutting;
                 }
             }
         }
-        return null;
+        return -1;
     }
 
     public static void craftEverythingPossibleWithCurrentRecipe(RecipePattern recipe,

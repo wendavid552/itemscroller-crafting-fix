@@ -22,7 +22,7 @@ public class RecipePattern
     private ItemStack[] recipe = new ItemStack[9];
     public CraftingRecipe cachedRecipeFromBook = null;
 
-    public StonecuttingRecipe cachedRecipeFromStonecutting = null;
+    public int cachedRecipeFromStonecutting = -1;
     private int maxCraftAmount = 64;
     private HashSet<Item> recipeRemainders = new HashSet<Item>();
 
