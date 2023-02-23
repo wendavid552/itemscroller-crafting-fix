@@ -1196,7 +1196,7 @@ public class InventoryUtils {
 
             // This slot is used to check that we get items from a DIFFERENT inventory than
             // where this slot is in
-            Slot slotGridFirst = container.getSlot(range.getFirst());
+            Slot[] slotGrids = {container.getSlot(range.getFirst()), slot};
             Map<ItemType, IntArrayList> ingredientSlots = ItemType.getSlotsPerItem(recipe.getRecipeItems());
 
             for (Map.Entry<ItemType, IntArrayList> entry : ingredientSlots.entrySet()) {
@@ -1211,9 +1211,9 @@ public class InventoryUtils {
                 }
 
                 if (fillStacks) {
-                    fillCraftingGrid(gui, slotGridFirst, ingredientReference, targetSlots);
+                    fillCraftingGrid(gui, slotGrids, ingredientReference, targetSlots);
                 } else {
-                    moveOneRecipeItemIntoCraftingGrid(gui, slotGridFirst, ingredientReference, targetSlots);
+                    moveOneRecipeItemIntoCraftingGrid(gui, slotGrids, ingredientReference, targetSlots);
                 }
             }
         }
@@ -1222,7 +1222,7 @@ public class InventoryUtils {
     }
 
     private static void fillCraftingGrid(HandledScreen<? extends ScreenHandler> gui,
-            Slot slotGridFirst,
+            Slot[] slotGrids,
             ItemStack ingredientReference,
             IntArrayList targetSlots) {
         ScreenHandler container = gui.getScreenHandler();
@@ -1235,7 +1235,7 @@ public class InventoryUtils {
         }
 
         while (true) {
-            slotNum = getSlotNumberOfLargestMatchingStackFromDifferentInventory(container, slotGridFirst,
+            slotNum = getSlotNumberOfLargestMatchingStackFromDifferentInventory(container, slotGrids,
                     ingredientReference);
 
             // Didn't find ingredient items
@@ -1541,7 +1541,7 @@ public class InventoryUtils {
     }
 
     private static void moveOneRecipeItemIntoCraftingGrid(HandledScreen<? extends ScreenHandler> gui,
-            Slot slotGridFirst,
+            Slot[] slotGrids,
             ItemStack ingredientReference,
             IntArrayList targetSlots) {
         ScreenHandler container = gui.getScreenHandler();
@@ -1550,7 +1550,7 @@ public class InventoryUtils {
         int slotCount = targetSlots.size();
 
         while (index < slotCount) {
-            slotNum = getSlotNumberOfSmallestStackFromDifferentInventory(container, slotGridFirst, ingredientReference,
+            slotNum = getSlotNumberOfSmallestStackFromDifferentInventory(container, slotGrids, ingredientReference,
                     slotCount);
 
             // Didn't find ingredient items
@@ -1622,14 +1622,14 @@ public class InventoryUtils {
     }
 
     private static int getSlotNumberOfLargestMatchingStackFromDifferentInventory(ScreenHandler container,
-            Slot slotReference,
+            Slot[] slotReference,
             ItemStack stackReference) {
         int slotNum = -1;
         int largest = 0;
 
         for (Slot slot : container.slots) {
             if (areSlotsInSameInventory(slot, slotReference) == false && slot.hasStack()
-                    && areStacksEqual(stackReference, slot.getStack()) && !(slot.inventory instanceof CraftingResultInventory)) {
+                    && areStacksEqual(stackReference, slot.getStack())) {
                 int stackSize = getStackSize(slot.getStack());
                 // 这个stack应该是legal的，也就是我们强行忽略掉overstacked items
                 if (stackSize > largest && stackSize <= slot.getStack().getMaxCount()) {
@@ -1649,7 +1649,7 @@ public class InventoryUtils {
      * then the largest one is selected.
      */
     private static int getSlotNumberOfSmallestStackFromDifferentInventory(ScreenHandler container,
-            Slot slotReference,
+            Slot[] slotReference,
             ItemStack stackReference,
             int idealSize) {
         int slotNumSmallest = -1;
@@ -1804,6 +1804,14 @@ public class InventoryUtils {
         return stack1.isEmpty() == false && stack1.isItemEqual(stack2) && ItemStack.areNbtEqual(stack1, stack2);
     }
 
+    private static boolean areSlotsInSameInventory(Slot slot1, Slot[] slots) {
+        for (Slot slot: slots) {
+            if(areSlotsInSameInventory(slot, slot1)) {
+                return true;
+            }
+        }
+        return false;
+    }
     private static boolean areSlotsInSameInventory(Slot slot1, Slot slot2) {
         return areSlotsInSameInventory(slot1, slot2, false);
     }
@@ -2363,17 +2371,19 @@ public class InventoryUtils {
             return;
         }
 
-        int numSlots = gui.getScreenHandler().slots.size();
-
         // Start the drag
         clickSlot(gui, -999, 0, SlotActionType.QUICK_CRAFT);
 
+        ScreenHandler container = gui.getScreenHandler();
+        int numSlots = container.slots.size();
         for (int slotNum : targetSlots) {
             if (slotNum >= numSlots) {
                 break;
             }
-
-            clickSlot(gui, slotNum, 1, SlotActionType.QUICK_CRAFT);
+            ItemStack item = container.slots.get(slotNum).getStack();
+            if(item.getCount() < item.getMaxCount()) {
+                clickSlot(gui, slotNum, 1, SlotActionType.QUICK_CRAFT);
+            }
         }
 
         // End the drag
