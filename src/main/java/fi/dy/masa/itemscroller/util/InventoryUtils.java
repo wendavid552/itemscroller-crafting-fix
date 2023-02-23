@@ -1495,35 +1495,42 @@ public class InventoryUtils {
         }
     }
 
-    public static boolean checkRecipeExist(RecipePattern recipe, HandledScreen<? extends ScreenHandler> gui) {
+    public static int checkRecipeEnough(RecipePattern recipe, HandledScreen<? extends ScreenHandler> gui) {
         Slot craftingOutputSlot = CraftingHandler.getFirstCraftingOutputSlotForGui(gui);
         ScreenHandler container = gui.getScreenHandler();
         int numSlots = container.slots.size();
         SlotRange range = CraftingHandler.getCraftingGridSlots(gui, craftingOutputSlot);
-        ItemStack[] recipeItems = recipe.getRecipeItems();
 
         // Check that the slot range is valid and that the recipe can fit into this type
         // of crafting grid
         if (range != null && range.getLast() < numSlots && recipe.getRecipeLength() <= range.getSlotCount()) {
             // This slot is used to check that we get items from a DIFFERENT inventory than
             // where this slot is in
+            Map<ItemType, IntArrayList> ingredientSlots = ItemType.getSlotsPerItem(recipe.getRecipeItems());
             Slot[] slotReference = {container.getSlot(range.getFirst()), craftingOutputSlot};
-            for(ItemStack stackReference : recipeItems) {
-                boolean isItemExist = false;
+            for(Map.Entry<ItemType, IntArrayList> entry : ingredientSlots.entrySet()) {
+                int count = 0;
+                int numSlotsWithItem = entry.getValue().size();
+                ItemStack stackReference = entry.getKey().getStack();
                 for(Slot slot : container.slots) {
-                    if(areSlotsInSameInventory(slot, slotReference) == false && slot.hasStack()
+                    if(!areSlotsInSameInventory(slot, slotReference) && slot.hasStack()
                             && areStacksEqual(stackReference, slot.getStack())){
-                        isItemExist = true;
-                        break;
+                        ++count;
+                        if(count > numSlotsWithItem) {
+                            break;
+                        }
                     }
                 }
-                if(!isItemExist) {
-                    return false;
+                if(count < numSlotsWithItem) {
+                    return 0;
+                }
+                else if (count == numSlotsWithItem) {
+                    return 1;
                 }
             }
-            return true;
+            return 2;
         }
-        return false;
+        return 0;
     }
 
     private static int putSingleItemIntoSlots(HandledScreen<? extends ScreenHandler> gui,
