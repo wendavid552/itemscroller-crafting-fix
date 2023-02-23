@@ -7,12 +7,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.client.gui.screen.ingame.AnvilScreen;
-import net.minecraft.client.gui.screen.ingame.CraftingScreen;
-import net.minecraft.client.gui.screen.ingame.GrindstoneScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.gui.screen.ingame.*;
 import net.minecraft.screen.ForgingScreenHandler;
 import net.minecraft.screen.GrindstoneScreenHandler;
+import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import fi.dy.masa.itemscroller.Reference;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler;
@@ -127,8 +125,10 @@ public class Configs implements IConfigHandler
         CraftingHandler.addCraftingGridDefinition(InventoryScreen.class.getName(), CraftingResultSlot.class.getName(), 0, new SlotRange(1, 4));
         // vanilla anvil
         CraftingHandler.addCraftingGridDefinition(AnvilScreen.class.getName(), ForgingScreenHandler.class.getName()+"$2", 2, new SlotRange(0, 2));
-        // vanill grindstone
+        // vanilla grindstone
         CraftingHandler.addCraftingGridDefinition(GrindstoneScreen.class.getName(), GrindstoneScreenHandler.class.getName()+"$4", 2, new SlotRange(0, 2));
+        // vanilla stonecutter
+        CraftingHandler.addCraftingGridDefinition(StonecutterScreen.class.getName(), StonecutterScreenHandler.class.getName()+"$2", 1, new SlotRange(0, 1));
     }
 
     public static void saveToFile()
