@@ -1516,17 +1516,17 @@ public class InventoryUtils {
             Map<ItemType, IntArrayList> ingredientSlots = ItemType.getSlotsPerItem(recipe.getRecipeItems());
             Slot[] slotReference = {container.getSlot(range.getFirst()), craftingOutputSlot};
             for(Map.Entry<ItemType, IntArrayList> entry : ingredientSlots.entrySet()) {
-                int numSlotsWithItem = entry.getValue().size();
-                int countItems = 0, countSlots = 0;
-                ItemStack stackReference = entry.getKey().getStack();
+                int countItems = 0;
+                final int numSlotsWithItem = entry.getValue().size();
+                final ItemStack stackReference = entry.getKey().getStack();
+                final int itemsCraftOnce = numSlotsWithItem * stackReference.getMaxCount();
                 for(Slot slot : container.slots) {
                     if(!areSlotsInSameInventory(slot, slotReference) && slot.hasStack()
                             && areStacksEqual(stackReference, slot.getStack())){
                         countItems += slot.getStack().getCount();
-                        ++countSlots;
                     }
                 }
-                if(countSlots <= numSlotsWithItem && countItems % numSlotsWithItem == 0) {
+                if(countItems <= itemsCraftOnce && countItems % numSlotsWithItem == 0) {
                     return countItems == numSlotsWithItem ? 0 : 1;
                 }
             }
