@@ -1377,7 +1377,7 @@ public class InventoryUtils {
                 String cacheName = null;
                 for (int i = 0; i < 36; i++) {
                     CraftingRecipe bookRecipe = getBookRecipeFromPattern(recipe);
-                    if (bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
+                    if (!(gui instanceof StonecutterScreen) && bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
                         MinecraftClient mc = MinecraftClient.getInstance();
                         mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, true);
                     } else {
@@ -1390,6 +1390,12 @@ public class InventoryUtils {
                         }
 
                         tryMoveItemsToCraftingGridSlots(recipe, slot, gui, true);
+
+                        int stonecuttingRecipeIndex = InventoryUtils.getStonecuttingRecipeFromPattern(recipe);
+                        if(stonecuttingRecipeIndex != -1 && gui instanceof StonecutterScreen) {
+                            MinecraftClient mc = MinecraftClient.getInstance();
+                            mc.interactionManager.clickButton((gui.getScreenHandler()).syncId, stonecuttingRecipeIndex);
+                        }
                     }
                     if(!StringUtils.isBlank(cacheName) && gui instanceof AnvilScreen) {
                         ((IMixinAnvilScreen)gui).itemscroller_setItemName(cacheName);
