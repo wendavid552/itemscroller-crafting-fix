@@ -4,7 +4,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.StonecutterScreen;
 import net.minecraft.recipe.CraftingRecipe;
+import net.minecraft.recipe.StonecuttingRecipe;
+import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import fi.dy.masa.itemscroller.ItemScroller;
 import fi.dy.masa.itemscroller.config.Configs;
@@ -187,21 +190,29 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
                     RecipePattern recipe = RecipeStorage.getInstance().getSelectedRecipe();
 
                     CraftingRecipe bookRecipe = InventoryUtils.getBookRecipeFromPattern(recipe);
-                    if (bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
+                    int stonecuttingRecipeIndex = InventoryUtils.getStonecuttingRecipeFromPattern(recipe);
+                    if (!(gui instanceof StonecutterScreen) && bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
                         // System.out.println("recipe");
                         int option = InventoryUtils.checkRecipeEnough(recipe, gui);
                         if(option > 0) {
                             mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, option > 1);
                         }
-                    } else {
-                        // System.out.println("move");
+                    }
+                    else {
                         InventoryUtils.tryMoveItemsToFirstCraftingGrid(recipe, gui, true);
+                        if(stonecuttingRecipeIndex != -1 && gui instanceof StonecutterScreen) {
+                            mc.interactionManager.clickButton((gui.getScreenHandler()).syncId, stonecuttingRecipeIndex);
+                        }
                     }
 
-//                    for (int i = 0; i < recipe.getMaxCraftAmount(); i++) {
-//                        InventoryUtils.dropStack(gui, outputSlot.id);
-//                    }
-                    InventoryUtils.dropItem(gui, outputSlot.id);
+                    if(recipe.getResult().isStackable()) {
+                        for (int i = 0; i < recipe.getMaxCraftAmount(); i++) {
+                            InventoryUtils.dropStack(gui, outputSlot.id);
+                        }
+                    }
+                    else {
+                        InventoryUtils.dropItem(gui, outputSlot.id);
+                    }
 
                     InventoryUtils.tryClearCursor(gui);
                     InventoryUtils.throwAllCraftingResultsToGround(recipe, gui);

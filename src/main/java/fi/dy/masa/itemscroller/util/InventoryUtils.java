@@ -27,19 +27,19 @@ import net.minecraft.client.gui.screen.ingame.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.screen.AnvilScreenHandler;
+import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.screen.Generic3x3ContainerScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.CraftingResultSlot;
+import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.screen.slot.TradeOutputSlot;
@@ -47,9 +47,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
-import fi.dy.masa.itemscroller.mixin.IMixinCraftingResultSlot;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import org.apache.commons.lang3.StringUtils;
@@ -1340,6 +1337,32 @@ public class InventoryUtils {
             }
         }
         return null;
+    }
+
+    public static int getStonecuttingRecipeFromPattern(RecipePattern recipe) {
+        if(recipe.cachedRecipeFromStonecutting != -1) {
+            return recipe.cachedRecipeFromStonecutting;
+        }
+        else {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            RecipeManager recipeManager = mc.world.getRecipeManager();
+
+            ItemStack[] items = recipe.getRecipeItems();
+            SimpleInventory search = new SimpleInventory(items.length);
+            // Set dummy slots with recipe pattern
+            for (int i = 0; i < items.length; i++) {
+                search.setStack(i, items[i]);
+            }
+            List<StonecuttingRecipe> inputRecipes = recipeManager.getAllMatches(RecipeType.STONECUTTING, search, mc.world);
+            for(int i=0; i<inputRecipes.size(); ++i) {
+                StonecuttingRecipe inputRecipe = inputRecipes.get(i);
+                if(inputRecipe.getOutput().getItem() == recipe.getResult().getItem()) {
+                    recipe.cachedRecipeFromStonecutting = i;
+                    return recipe.cachedRecipeFromStonecutting;
+                }
+            }
+        }
+        return -1;
     }
 
     public static void craftEverythingPossibleWithCurrentRecipe(RecipePattern recipe,
