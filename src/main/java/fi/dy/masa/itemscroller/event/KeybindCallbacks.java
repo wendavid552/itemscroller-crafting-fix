@@ -159,41 +159,36 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler {
             Slot outputSlot = CraftingHandler.getFirstCraftingOutputSlotForGui(gui);
 
             if (outputSlot != null) {
-                for (int j = 0; j < Configs.Generic.MASS_CRAFT_MULTIPLIER.getIntegerValue(); j++) {
-                    RecipePattern recipe = RecipeStorage.getInstance().getSelectedRecipe();
+                RecipePattern recipe = RecipeStorage.getInstance().getSelectedRecipe();
+                CraftingRecipe bookRecipe = InventoryUtils.getBookRecipeFromPattern(recipe);
+                
+                if (!(gui instanceof StonecutterScreen) && bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
+                    // System.out.println("recipe");
+                    if(Configs.Toggles.RESERVED_CRAFTING.getBooleanValue()) {
+                        int option = InventoryUtils.checkRecipeEnough(recipe, gui);
+                        if (option > 0) {
+                            mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, option > 1);
+                        }
+                        }
+                    else{
+                        mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, true);
+                    }
+                }
+                  else {
+                    InventoryUtils.tryMoveItemsToFirstCraftingGrid(recipe, gui, true);
+                    int stonecuttingRecipeIndex = InventoryUtils.getStonecuttingRecipeFromPattern(recipe);
+                    if(stonecuttingRecipeIndex != -1 && gui instanceof StonecutterScreen) {
+                        mc.interactionManager.clickButton((gui.getScreenHandler()).syncId, stonecuttingRecipeIndex);
+                    }
+                }
 
-                    CraftingRecipe bookRecipe = InventoryUtils.getBookRecipeFromPattern(recipe);
-                    if (!(gui instanceof StonecutterScreen) && bookRecipe != null && !bookRecipe.isIgnoredInRecipeBook()) { // Use recipe book if possible
-                        // System.out.println("recipe");
-                        if(Configs.Toggles.RESERVED_CRAFTING.getBooleanValue()) {
-                            int option = InventoryUtils.checkRecipeEnough(recipe, gui);
-                            if (option > 0) {
-                                mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, option > 1);
-                            }
-                        }
-                        else{
-                            mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, bookRecipe, true);
-                        }
+                if(recipe.getResult().isStackable()) {
+                    for (int i = 0; i < recipe.getMaxCraftAmount(); i++) {
+                        InventoryUtils.dropStack(gui, outputSlot.id);
                     }
-                    else {
-                        InventoryUtils.tryMoveItemsToFirstCraftingGrid(recipe, gui, true);
-                        int stonecuttingRecipeIndex = InventoryUtils.getStonecuttingRecipeFromPattern(recipe);
-                        if(stonecuttingRecipeIndex != -1 && gui instanceof StonecutterScreen) {
-                            mc.interactionManager.clickButton((gui.getScreenHandler()).syncId, stonecuttingRecipeIndex);
-                        }
-                    }
-
-                    if(recipe.getResult().isStackable()) {
-                        for (int i = 0; i < recipe.getMaxCraftAmount(); i++) {
-                            InventoryUtils.dropStack(gui, outputSlot.id);
-                        }
-                    }
-                    else {
-                        InventoryUtils.dropItem(gui, outputSlot.id);
-                    }
-
-                    InventoryUtils.tryClearCursor(gui);
-                    InventoryUtils.throwAllCraftingResultsToGround(recipe, gui);
+                }
+                else {
+                    InventoryUtils.dropItem(gui, outputSlot.id);
                 }
 
                 InventoryUtils.tryClearCursor(gui);
