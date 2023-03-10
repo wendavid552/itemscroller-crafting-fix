@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Sets;
 import fi.dy.masa.itemscroller.ItemScroller;
 import fi.dy.masa.itemscroller.config.Configs;
 import fi.dy.masa.itemscroller.config.Hotkeys;
@@ -32,6 +33,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeType;
@@ -1863,7 +1865,58 @@ public class InventoryUtils {
     }
 
     public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2) {
-        return stack1.isEmpty() == false && stack1.isItemEqual(stack2) && ItemStack.areNbtEqual(stack1, stack2);
+//        return stack1.isEmpty() == false && stack1.isItemEqual(stack2) && ItemStack.areNbtEqual(stack1, stack2);
+        return stack1.isEmpty() == false && stack1.isItemEqual(stack2) && areNbtEqualExcept(stack1, stack2);
+    }
+
+    private static boolean areNbtEqualExcept(ItemStack left, ItemStack right) {
+        if (left.isEmpty() && right.isEmpty()) {
+            return true;
+        } else if (!left.isEmpty() && !right.isEmpty()) {
+            if (left.getNbt() == null && right.getNbt() != null) {
+                return false;
+            } else {
+                return left.getNbt() == null || areNbtEqualExcept(left.getNbt(), right.getNbt());
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean areNbtEqualExcept(NbtCompound left, NbtCompound right) {
+        if(left == right){
+            return true;
+        }
+        else{
+            int leftSize = left.getSize();
+            int rightSize = right.getSize();
+            Set<String> IgnoreKeys = Sets.newHashSet(Configs.Generic.NBT_IGNORED_KEYS.getStrings());
+            for(String ignoreKeys: IgnoreKeys) {
+                if(left.contains(ignoreKeys)) {
+                    leftSize--;
+                }
+                if(right.contains(ignoreKeys)) {
+                    rightSize--;
+                }
+            }
+            if(leftSize != rightSize) {
+                return false;
+            }
+            for(String key: left.getKeys()) {
+                if(IgnoreKeys.contains(key)) {
+                    continue;
+                }
+                if(right.contains(key)) {
+                    if(!Objects.equals(left.get(key), right.get(key))) {
+                        return false;
+                    }
+                }
+                else {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     private static boolean areSlotsInSameInventory(Slot slot1, Slot[] slots) {
