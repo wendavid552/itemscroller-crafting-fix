@@ -10,9 +10,9 @@
 		"IMixinSlot",
 		"MixinAbstractInventoryScreen",
 		"MixinCraftingScreenHandler",
-		"MixinGameRenderer",
 		"MixinMerchantScreen",
-		"MixinMerchantScreenHandler"
+		"MixinMerchantScreenHandler",
+		"MixinScreen"
 	],
 	"injectors": {
 		"defaultRequire": 1

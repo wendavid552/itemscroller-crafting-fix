@@ -31,9 +31,9 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.ingame.MerchantScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeManager;
@@ -582,8 +582,8 @@ public class InventoryUtils {
         // Picked up or swapped items to the cursor, grab a reference to the slot that
         // the items came from
         // Note that we are only checking the item here!
-        if (isStackEmpty(stackCursor) == false && stackCursor.isItemEqual(stackInCursorLast) == false
-                && sourceSlotCandidate != null) {
+        if (isStackEmpty(stackCursor) == false && ItemStack.areItemsEqual(stackCursor, stackInCursorLast) == false && sourceSlotCandidate != null)
+        {
             sourceSlot = new WeakReference<>(sourceSlotCandidate.get());
         }
     }
@@ -706,9 +706,8 @@ public class InventoryUtils {
 
         ItemStack[] originalStacks = getOriginalStacks(container);
 
-        // Try to move the temporary single-item stack via the shift-click handler
-        // method
-        slot.setStack(stack);
+        // Try to move the temporary single-item stack via the shift-click handler method
+        slot.setStackNoCallbacks(stack);
         container.quickMove(mc.player, slot.id);
 
         // Successfully moved the item somewhere, now we want to check where it went
@@ -729,7 +728,7 @@ public class InventoryUtils {
         }
 
         // Restore the original stack to the slot under the cursor (on the client side)
-        slot.setStack(stackOrig);
+        slot.setStackNoCallbacks(stackOrig);
 
         return false;
     }
@@ -1781,8 +1780,9 @@ public class InventoryUtils {
         return slots;
     }
 
-    public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2) {
-        return stack1.isEmpty() == false && stack1.isItemEqual(stack2) && ItemStack.areNbtEqual(stack1, stack2);
+    public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2)
+    {
+        return ItemStack.canCombine(stack1, stack2);
     }
 
     private static boolean areSlotsInSameInventory(Slot slot1, Slot slot2) {
@@ -1818,9 +1818,10 @@ public class InventoryUtils {
         for (int i = 0; i < originalStacks.length; i++) {
             ItemStack stackSlot = container.getSlot(i).getStack();
 
-            if (areStacksEqual(stackSlot, originalStacks[i]) == false || (isStackEmpty(stackSlot) == false
-                    && getStackSize(stackSlot) != getStackSize(originalStacks[i]))) {
-                container.getSlot(i).setStack(originalStacks[i]);
+            if (areStacksEqual(stackSlot, originalStacks[i]) == false ||
+                (isStackEmpty(stackSlot) == false && getStackSize(stackSlot) != getStackSize(originalStacks[i])))
+            {
+                container.getSlot(i).setStackNoCallbacks(originalStacks[i]);
             }
         }
     }

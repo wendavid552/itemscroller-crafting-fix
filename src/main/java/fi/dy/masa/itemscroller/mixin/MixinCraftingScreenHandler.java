@@ -7,15 +7,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.world.World;
 
 @Mixin(net.minecraft.screen.CraftingScreenHandler.class)
 public abstract class MixinCraftingScreenHandler
 {
-    @Shadow @Final private net.minecraft.inventory.CraftingInventory input;
+    @Shadow @Final private RecipeInputInventory input;
     @Shadow @Final private net.minecraft.inventory.CraftingResultInventory result;
     @Shadow @Final private net.minecraft.entity.player.PlayerEntity player;
 
@@ -27,10 +27,10 @@ public abstract class MixinCraftingScreenHandler
 
     @Inject(method = "updateResult", at = @At("RETURN"))
     private static void onUpdateResult(
-            ScreenHandler screenHandler,
+            ScreenHandler handler,
             World world,
             PlayerEntity player,
-            CraftingInventory craftingInv,
+            RecipeInputInventory craftingInventory,
             CraftingResultInventory resultInv,
             CallbackInfo ci)
     {
