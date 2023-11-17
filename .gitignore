@@ -6,5 +6,8 @@ eclipse/
 .classpath
 .project
 .idea
-build.number
 run/
+.vscode
+build.number
+.DS_Store
+launch.json
