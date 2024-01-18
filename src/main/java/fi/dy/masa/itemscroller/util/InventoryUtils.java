@@ -21,6 +21,7 @@ import fi.dy.masa.itemscroller.recipes.RecipeStorage;
 import fi.dy.masa.itemscroller.villager.VillagerDataStorage;
 import fi.dy.masa.itemscroller.villager.VillagerUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
+import net.minecraft.registry.DynamicRegistryManager;
 import org.apache.commons.lang3.StringUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -1349,9 +1350,10 @@ public class InventoryUtils {
                 search.setStack(i, items[i]);
             }
             List<StonecuttingRecipe> inputRecipes = recipeManager.getAllMatches(RecipeType.STONECUTTING, search, mc.world);
+            DynamicRegistryManager stonecuttingRegistryManger = mc.world.getRegistryManager();
             for(int i=0; i<inputRecipes.size(); ++i) {
                 StonecuttingRecipe inputRecipe = inputRecipes.get(i);
-                if(inputRecipe.getOutput().getItem() == recipe.getResult().getItem()) {
+                if(inputRecipe.getOutput(stonecuttingRegistryManger).getItem() == recipe.getResult().getItem()) {
                     recipe.cachedRecipeFromStonecutting = i;
                     return recipe.cachedRecipeFromStonecutting;
                 }
@@ -1393,6 +1395,7 @@ public class InventoryUtils {
                         }
                     }
                     if(!StringUtils.isBlank(cacheName) && gui instanceof AnvilScreen) {
+//                        System.out.println(cacheName);
                         ((IMixinAnvilScreen)gui).itemscroller_setItemName(cacheName);
                     }
                     shiftClickSlot(gui, slot.id);
