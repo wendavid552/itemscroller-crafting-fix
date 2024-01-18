@@ -38,6 +38,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.screen.Generic3x3ContainerScreenHandler;
@@ -874,7 +875,7 @@ public class InventoryUtils {
         /*
          * for (Slot slotTmp : container.slots) { ItemStack stackTmp =
          * slotTmp.getStack();
-         * 
+         *
          * if (slotTmp.id != slot.id && isStackEmpty(stackTmp) == false &&
          * slotTmp.canTakeItems(gui.mc.player) && (getStackSize(stackTmp) == 1 ||
          * slotTmp.canInsert(stackTmp))) { if (areStacksEqual(stackTmp, stackOrig)) {
@@ -1744,7 +1745,7 @@ public class InventoryUtils {
      * If preferPartial is true, then stacks with a stackSize less that
      * getMaxStackSize() are at the beginning of the list (not ordered though) and
      * full stacks are at the end, otherwise the reverse is true.
-     * 
+     *
      * @param container
      * @param slotReference
      * @param sameInventory          if true, then the returned slots are from the
@@ -1941,7 +1942,7 @@ public class InventoryUtils {
      * areStacksEqual(slot.getStack(), slotTmp.getStack()))) {
      * this.clickSlotsToMoveItemsFromSlot(slotTmp, gui, toOtherInventory); return; }
      * }
-     * 
+     *
      * // Move the hovered-over slot's stack last if (toOtherInventory) {
      * this.clickSlotsToMoveItemsFromSlot(slot, gui, toOtherInventory); } }
      */
@@ -2046,7 +2047,7 @@ public class InventoryUtils {
 
     /**
      * Try move items from slotFrom to slotTo
-     * 
+     *
      * @return true if at least some items were moved
      */
     private static boolean clickSlotsToMoveItems(HandledScreen<? extends ScreenHandler> gui,
@@ -2311,13 +2312,13 @@ public class InventoryUtils {
     /*
      * private static class SlotVerticalSorterSlots implements Comparator<Slot> {
      * private final boolean topToBottom;
-     * 
+     *
      * public SlotVerticalSorterSlots(boolean topToBottom) { this.topToBottom =
      * topToBottom; }
-     * 
+     *
      * @Override public int compare(Slot slot1, Slot slot2) { if (slot1.yPos ==
      * slot2.yPos) { return (slot1.id < slot2.id) == this.topToBottom ? -1 : 1; }
-     * 
+     *
      * return (slot1.yPos < slot2.yPos) == this.topToBottom ? -1 : 1; } }
      */
 
