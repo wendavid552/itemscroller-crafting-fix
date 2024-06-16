@@ -43,8 +43,12 @@ public abstract class MixinMerchantScreen extends HandledScreen<MerchantScreenHa
         super(handler, inventory, title);
     }
 
-    @Inject(method = "init", at = @At("RETURN"))
-    private void initTradeListWidget(CallbackInfo ci)
+    @Inject(
+            method = "render",
+            at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/screen/ingame/MerchantScreen;renderScrollbar(Lnet/minecraft/client/gui/DrawContext;IILnet/minecraft/village/TradeOfferList;)V")
+    )
+    private void fixRenderScrollBar(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci)
     {
         if (Configs.Toggles.VILLAGER_TRADE_FEATURES.getBooleanValue() &&
             Configs.Generic.VILLAGER_TRADE_LIST_REMEMBER_SCROLL.getBooleanValue())

@@ -1,13 +1,8 @@
 package fi.dy.masa.itemscroller.util;
 
-import java.lang.ref.WeakReference;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
+import java.util.*;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
@@ -127,7 +122,7 @@ public class InventoryUtils
                      ((ClientPlayerEntity) player).getRecipeBook().contains(recipeEntry)))
                 {
                     inventoryCraftResult.setLastRecipe(recipeEntry);
-                    stack = recipe.craft(craftMatrix, MinecraftClient.getInstance().getNetworkHandler().getRegistryManager());
+                    stack = recipe.craft(craftMatrix, world.getRegistryManager());
                 }
 
                 if (setEmptyStack || stack.isEmpty() == false)
@@ -148,7 +143,7 @@ public class InventoryUtils
             Identifier rl = Registries.ITEM.getId(stack.getItem());
             String idStr = rl != null ? rl.toString() : "null";
             String displayName = stack.getName().getString();
-            String nbtStr = stack.getNbt() != null ? stack.getNbt().toString() : "<no NBT>";
+            String nbtStr = stack.getComponents() != null ? stack.getComponents().toString() : "<no NBT>";
 
             return String.format("[%s - display: %s - NBT: %s] (%s)", idStr, displayName, nbtStr, stack);
         }
@@ -1110,8 +1105,8 @@ public class InventoryUtils
             return;
         }
 
-        ItemStack buy1 = recipe.getAdjustedFirstBuyItem();
-        ItemStack buy2 = recipe.getSecondBuyItem();
+        ItemStack buy1 = recipe.getDisplayedFirstBuyItem();
+        ItemStack buy2 = recipe.getDisplayedSecondBuyItem();
 
         if (isStackEmpty(buy1) == false)
         {
@@ -2073,7 +2068,7 @@ public class InventoryUtils
 
     public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2)
     {
-        return ItemStack.canCombine(stack1, stack2);
+        return ItemStack.areItemsAndComponentsEqual(stack1, stack2);
     }
 
     private static boolean areSlotsInSameInventory(Slot slot1, Slot slot2)
@@ -2797,5 +2792,13 @@ public class InventoryUtils
     public static void setStackSize(ItemStack stack, int size)
     {
         stack.setCount(size);
+    }
+
+    public static ItemStack copyStack(ItemStack stack, boolean empty)
+    {
+        if (empty)
+            return stack.copyAndEmpty();
+        else
+            return stack.copy();
     }
 }

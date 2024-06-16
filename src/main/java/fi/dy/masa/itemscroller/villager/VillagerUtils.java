@@ -3,6 +3,7 @@ package fi.dy.masa.itemscroller.villager;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.MerchantScreen;
@@ -11,7 +12,6 @@ import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import fi.dy.masa.malilib.util.GuiUtils;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 public class VillagerUtils
 {
@@ -19,9 +19,8 @@ public class VillagerUtils
     {
         Screen screen = GuiUtils.getCurrentScreen();
 
-        if (screen instanceof MerchantScreen)
+        if (screen instanceof MerchantScreen merchantScreen)
         {
-            MerchantScreen merchantScreen = (MerchantScreen) screen;
             MerchantScreenHandler handler = merchantScreen.getScreenHandler();
 
             int realIndex = getRealTradeIndexFor(visibleIndex, handler);

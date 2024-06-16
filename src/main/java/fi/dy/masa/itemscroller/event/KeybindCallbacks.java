@@ -20,11 +20,7 @@ import fi.dy.masa.itemscroller.gui.GuiConfigs;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler;
 import fi.dy.masa.itemscroller.recipes.RecipePattern;
 import fi.dy.masa.itemscroller.recipes.RecipeStorage;
-import fi.dy.masa.itemscroller.util.AccessorUtils;
-import fi.dy.masa.itemscroller.util.ClickPacketBuffer;
-import fi.dy.masa.itemscroller.util.InputUtils;
-import fi.dy.masa.itemscroller.util.InventoryUtils;
-import fi.dy.masa.itemscroller.util.MoveAction;
+import fi.dy.masa.itemscroller.util.*;
 
 public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
 {

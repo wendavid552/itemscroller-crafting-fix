@@ -1,13 +1,15 @@
 package fi.dy.masa.itemscroller.event;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.registry.DynamicRegistryManager;
+import fi.dy.masa.malilib.interfaces.IWorldLoadListener;
 import fi.dy.masa.itemscroller.config.Configs;
 import fi.dy.masa.itemscroller.recipes.RecipeStorage;
 import fi.dy.masa.itemscroller.util.ClickPacketBuffer;
 import fi.dy.masa.itemscroller.villager.VillagerDataStorage;
-import fi.dy.masa.malilib.interfaces.IWorldLoadListener;
 
 public class WorldLoadListener implements IWorldLoadListener
 {
@@ -17,7 +19,7 @@ public class WorldLoadListener implements IWorldLoadListener
         // Quitting to main menu, save the settings before the integrated server gets shut down
         if (worldBefore != null && worldAfter == null)
         {
-            this.writeData();
+            this.writeData(worldBefore.getRegistryManager());
             VillagerDataStorage.getInstance().writeToDisk();
         }
     }
@@ -25,10 +27,12 @@ public class WorldLoadListener implements IWorldLoadListener
     @Override
     public void onWorldLoadPost(@Nullable ClientWorld worldBefore, @Nullable ClientWorld worldAfter, MinecraftClient mc)
     {
+        RecipeStorage.getInstance().reset(worldAfter == null);
+
         // Logging in to a world, load the data
         if (worldBefore == null && worldAfter != null)
         {
-            this.readStoredData();
+            this.readStoredData(worldAfter.getRegistryManager());
             VillagerDataStorage.getInstance().readFromDisk();
         }
 
@@ -39,19 +43,19 @@ public class WorldLoadListener implements IWorldLoadListener
         }
     }
 
-    private void writeData()
+    private void writeData(@Nonnull DynamicRegistryManager registryManager)
     {
         if (Configs.Generic.SCROLL_CRAFT_STORE_RECIPES_TO_FILE.getBooleanValue())
         {
-            RecipeStorage.getInstance().writeToDisk();
+            RecipeStorage.getInstance().writeToDisk(registryManager);
         }
     }
 
-    private void readStoredData()
+    private void readStoredData(@Nonnull DynamicRegistryManager registryManager)
     {
         if (Configs.Generic.SCROLL_CRAFT_STORE_RECIPES_TO_FILE.getBooleanValue())
         {
-            RecipeStorage.getInstance().readFromDisk();
+            RecipeStorage.getInstance().readFromDisk(registryManager);
         }
-   }
+    }
 }

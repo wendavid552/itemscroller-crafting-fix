@@ -1,8 +1,8 @@
 package fi.dy.masa.itemscroller.util;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 import net.minecraft.item.ItemStack;
@@ -17,7 +17,7 @@ public class ItemType
 
     public ItemType(@Nonnull ItemStack stack)
     {
-        this.stack = stack.copy();
+        this.stack = stack.isEmpty() ? InventoryUtils.EMPTY_STACK : InventoryUtils.copyStack(stack, false);
     }
 
     public ItemStack getStack()
@@ -32,7 +32,7 @@ public class ItemType
         int result = 1;
         //result = prime * result + ((stack == null) ? 0 : stack.hashCode());
         result = prime * result + this.stack.getItem().hashCode();
-        result = prime * result + (this.stack.getNbt() != null ? this.stack.getNbt().hashCode() : 0);
+        result = prime * result + (this.stack.getComponents() != null ? this.stack.getComponents().hashCode() : 0);
         return result;
     }
 
@@ -48,7 +48,7 @@ public class ItemType
 
         ItemType other = (ItemType) obj;
 
-        return ItemStack.canCombine(this.stack, other.stack);
+        return ItemStack.areItemsAndComponentsEqual(this.stack, other.stack);
     }
 
     /**

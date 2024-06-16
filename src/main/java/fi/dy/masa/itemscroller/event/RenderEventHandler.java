@@ -1,5 +1,6 @@
 package fi.dy.masa.itemscroller.event;
 
+import org.joml.Matrix4fStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -52,10 +53,10 @@ public class RenderEventHandler
 
             this.calculateRecipePositions(gui);
 
-            MatrixStack matrixStack = RenderSystem.getModelViewStack();
-            matrixStack.push();
-            matrixStack.translate(this.recipeListX, this.recipeListY, 0);
-            matrixStack.scale((float) this.scale, (float) this.scale, 1);
+            Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+            matrix4fStack.pushMatrix();
+            matrix4fStack.translate(this.recipeListX, this.recipeListY, 0);
+            matrix4fStack.scale((float) this.scale, (float) this.scale, 1);
 
             String str = StringUtils.translate("itemscroller.gui.label.recipe_page", (first / countPerPage) + 1, recipes.getTotalRecipeCount() / countPerPage);
 
@@ -81,7 +82,7 @@ public class RenderEventHandler
                 this.renderRecipeItems(recipe, recipes.getRecipeCountPerPage(), gui, drawContext);
             }
 
-            matrixStack.pop();
+            matrix4fStack.popMatrix();
             RenderSystem.applyModelViewMatrix();
             RenderSystem.enableBlend(); // Fixes the crafting book icon rendering
         }
@@ -114,9 +115,9 @@ public class RenderEventHandler
             final int recipeId = this.getHoveredRecipeId(mouseX, mouseY, recipes, gui);
 
             float offset = 300f;
-            MatrixStack matrixStack = RenderSystem.getModelViewStack();
-            matrixStack.push();
-            matrixStack.translate(0, 0, offset);
+            Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+            matrix4fStack.pushMatrix();
+            matrix4fStack.translate(0, 0, offset);
 
             if (recipeId >= 0)
             {
@@ -134,7 +135,7 @@ public class RenderEventHandler
                 }
             }
 
-            matrixStack.pop();
+            matrix4fStack.popMatrix();
             RenderSystem.applyModelViewMatrix();
         }
     }
@@ -223,6 +224,7 @@ public class RenderEventHandler
         x = x - (int) (font.getWidth(indexStr) * scale) - 2;
         y = row * this.entryHeight + this.entryHeight / 2 - font.fontHeight / 2;
 
+        // TODO DrawContext still uses the MatrixStack type
         MatrixStack matrixStack = drawContext.getMatrices();
         matrixStack.push();
         matrixStack.translate(x, y, 0);
@@ -303,6 +305,7 @@ public class RenderEventHandler
             stack = stack.copy();
             InventoryUtils.setStackSize(stack, 1);
 
+            // TODO DrawContext still uses the MatrixStack type
             MatrixStack matrixStack = drawContext.getMatrices();
             matrixStack.push();
             matrixStack.translate(0, 0, 100.f);
