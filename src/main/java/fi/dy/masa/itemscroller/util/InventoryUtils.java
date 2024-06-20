@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -107,10 +108,11 @@ public class InventoryUtils
             ItemStack stack = ItemStack.EMPTY;
             CraftingRecipe recipe = Configs.Generic.USE_RECIPE_CACHING.getBooleanValue() ? lastRecipe : null;
             RecipeEntry<?> recipeEntry = null;
+            CraftingRecipeInput recipeInput = craftMatrix.createRecipeInput();
 
-            if (recipe == null || recipe.matches(craftMatrix, world) == false)
+            if (recipe == null || recipe.matches(recipeInput, world) == false)
             {
-                Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftMatrix, world);
+                Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, recipeInput, world);
                 recipe = optional.map(RecipeEntry::value).orElse(null);
                 recipeEntry = optional.orElse(null);
             }
@@ -122,7 +124,7 @@ public class InventoryUtils
                      ((ClientPlayerEntity) player).getRecipeBook().contains(recipeEntry)))
                 {
                     inventoryCraftResult.setLastRecipe(recipeEntry);
-                    stack = recipe.craft(craftMatrix, world.getRegistryManager());
+                    stack = recipe.craft(recipeInput, world.getRegistryManager());
                 }
 
                 if (setEmptyStack || stack.isEmpty() == false)

@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.RecipeInputInventory;
+import net.minecraft.recipe.CraftingRecipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.world.World;
 import fi.dy.masa.itemscroller.util.InventoryUtils;
@@ -33,7 +35,7 @@ public abstract class MixinCraftingScreenHandler
             PlayerEntity player,
             RecipeInputInventory craftingInventory,
             CraftingResultInventory resultInv,
-            CallbackInfo ci)
+            RecipeEntry<CraftingRecipe> recipeEntry, CallbackInfo ci)
     {
         InventoryUtils.onSlotChangedCraftingGrid(player, craftingInventory, resultInv);
     }

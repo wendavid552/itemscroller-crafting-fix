@@ -65,7 +65,7 @@ public class TradeType
     {
         try
         {
-            Identifier id = new Identifier(name);
+            Identifier id = Identifier.tryParse(name);
             return Registries.ITEM.get(id);
         }
         catch (Exception e)
