@@ -2674,7 +2674,8 @@ public class InventoryUtils
             }
         }
 
-        System.out.printf("Sorting [%d, %d)\n", range.first(), range.second());
+        //System.out.printf("Sorting [%d, %d)\n", range.first(), range.second());
+        //ItemScroller.printDebug("Sorting [{}, {}]", range.first(), range.second());
         tryClearCursor(gui);
         tryMergeItems(gui, range.left(), range.right() - 1);
 
@@ -2827,7 +2828,8 @@ public class InventoryUtils
         {
             clickSlot(gui, slot, slot.id, 0, SlotActionType.PICKUP);
             clickSlot(gui, target, target.id, 0, SlotActionType.PICKUP);
-            System.out.printf("Moved stack from slot %d to slot %d\n", slot.id, target.id);
+            //System.out.printf("Moved stack from slot %d to slot %d\n", slot.id, target.id);
+            //ItemScroller.printDebug("Moved stack from slot {} to slot {}", slot.id, target.id);
             return false;
         }
 
@@ -2835,7 +2837,8 @@ public class InventoryUtils
         int targetSize = targetStack.getCount();
         assumeEmptyShulkerStacking = true;
         int maxSize = stackMaxSize(stack, true);
-        System.out.printf("Merging %s into %s, maxSize: %d\n", stack, targetStack, maxSize);
+        //System.out.printf("Merging %s into %s, maxSize: %d\n", stack, targetStack, maxSize);
+        //ItemScroller.printDebug("Merging {} into {}, maxSize: {}", stack, targetStack, maxSize);
 
         if (targetSize >= maxSize)
         {
