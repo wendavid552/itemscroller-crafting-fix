@@ -1,8 +1,14 @@
 package fi.dy.masa.itemscroller.event;
 
+import fi.dy.masa.itemscroller.mixin.IMixinCraftingResultSlot;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.inventory.RecipeInputInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -162,6 +168,11 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                 ItemScroller.logger.info("GUI class: {}", gui.getClass().getName());
             }
 
+            return true;
+        }
+        else if (key == Hotkeys.SORT_INVENTORY.getKeybind())
+        {
+            InventoryUtils.sortInventory(gui);
             return true;
         }
 
