@@ -11,10 +11,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
-public class MixinItemStak
+public class MixinItemStack
 {
     @Inject(method = "capCount", at = @At("HEAD"), cancellable = true)
-    private void dontCap(int maxCount, CallbackInfo ci) {
+    private void dontCap(int maxCount, CallbackInfo ci)
+    {
         // Client-side fx for empty shulker box stacking
         if (MinecraftClient.getInstance().isOnThread() && Configs.Generic.SORT_ASSUME_EMPTY_BOX_STACKS.getBooleanValue())
         {
@@ -23,7 +24,8 @@ public class MixinItemStak
     }
 
     @Inject(method = "getMaxCount", at = @At("HEAD"), cancellable = true)
-    private void getMaxCount(CallbackInfoReturnable<Integer> cir) {
+    private void getMaxCount(CallbackInfoReturnable<Integer> cir)
+    {
         // Client-side fx for empty shulker box stacking
         if (MinecraftClient.getInstance().isOnThread() && Configs.Generic.SORT_ASSUME_EMPTY_BOX_STACKS.getBooleanValue() && InventoryUtils.assumeEmptyShulkerStacking)
         {

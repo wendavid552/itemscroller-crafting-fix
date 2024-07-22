@@ -2790,8 +2790,10 @@ public class InventoryUtils
         return isShulkerBox(stack) && stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).streamNonEmpty().findAny().isEmpty();
     }
 
-    public static int stackMaxSize(ItemStack stack, boolean assumeShulkerStacking) {
-        if (stack.isEmpty()) {
+    public static int stackMaxSize(ItemStack stack, boolean assumeShulkerStacking)
+    {
+        if (stack.isEmpty())
+        {
             return 64;
         }
 

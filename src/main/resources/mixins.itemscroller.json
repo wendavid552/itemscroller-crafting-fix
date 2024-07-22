@@ -16,7 +16,7 @@
 		"MixinMerchantScreenHandler",
 		"MixinRecipeBookWidget",
 		"MixinScreen",
-		"MixinItemStak"
+        "MixinItemStack"
 	],
 	"injectors": {
 		"defaultRequire": 1
