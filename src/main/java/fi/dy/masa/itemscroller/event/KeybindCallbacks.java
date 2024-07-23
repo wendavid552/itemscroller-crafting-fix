@@ -5,10 +5,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.inventory.RecipeInputInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -179,6 +175,18 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
         return false;
     }
 
+    private static void debugPrintInv(RecipeInputInventory inv)
+    {
+        for (int i = 0; i < inv.getHeight(); i++)
+        {
+            for (int j = 0; j < inv.getWidth(); j++)
+            {
+                System.out.print(inv.getStack(i * inv.getWidth() + j) + " ");
+            }
+            System.out.println();
+        }
+    }
+
     @Override
     public void onClientTick(MinecraftClient mc)
     {
@@ -204,6 +212,7 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                 return;
             }
 
+            InventoryUtils.bufferInvUpdates = true;
             Slot outputSlot = CraftingHandler.getFirstCraftingOutputSlotForGui(gui);
 
             if (outputSlot != null)
@@ -224,9 +233,22 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                         InventoryUtils.setInhibitCraftingOutputUpdate(true);
                         InventoryUtils.throwAllCraftingResultsToGround(recipe, gui);
                         InventoryUtils.throwAllNonRecipeItemsToGround(recipe, gui);
+                        RecipeInputInventory inv = ((IMixinCraftingResultSlot) (outputSlot)).itemscroller_getCraftingInventory();
+                        System.out.println("Before:");
+                        debugPrintInv(inv);
+                        try
+                        {
+                            Thread.sleep(0);
+                        } catch (InterruptedException e)
+                        {
+                        }
                         InventoryUtils.setCraftingGridContentsUsingSwaps(gui, mc.player.getInventory(), recipe, outputSlot);
+                        System.out.println("After:");
+                        debugPrintInv(inv);
                         InventoryUtils.setInhibitCraftingOutputUpdate(false);
                         InventoryUtils.updateCraftingOutputSlot(outputSlot);
+
+                        System.out.printf("Output slot: %s\n", outputSlot.getStack());
 
                         if (InventoryUtils.areStacksEqual(outputSlot.getStack(), recipe.getResult()) == false)
                         {
@@ -234,6 +256,8 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                         }
 
                         InventoryUtils.shiftClickSlot(gui, outputSlot.id);
+                        System.out.println("Shift clicked");
+                        debugPrintInv(inv);
                     }
                 }
                 else
@@ -270,6 +294,11 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
             }
 
             this.massCraftTicker = 0;
+            InventoryUtils.bufferInvUpdates = false;
+            InventoryUtils.invUpdatesBuffer.removeIf(packet -> {
+                packet.apply(mc.getNetworkHandler());
+                return true;
+            });
         }
     }
 }

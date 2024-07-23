@@ -18,7 +18,6 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.ingame.MerchantScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,12 +26,11 @@ import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
-import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
-import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
@@ -45,7 +43,6 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.screen.slot.TradeOutputSlot;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.GameRules;
@@ -79,6 +76,8 @@ public class InventoryUtils
     private static boolean inhibitCraftResultUpdate;
     private static Runnable selectedSlotUpdateTask;
     public static boolean assumeEmptyShulkerStacking = false;
+    public static boolean bufferInvUpdates = false;
+    public static List<Packet<ClientPlayPacketListener>> invUpdatesBuffer = new ArrayList<>();
 
     public static void setInhibitCraftingOutputUpdate(boolean inhibitUpdate)
     {
@@ -89,10 +88,10 @@ public class InventoryUtils
                                                  RecipeInputInventory craftMatrix,
                                                  CraftingResultInventory inventoryCraftResult)
     {
-        if (inhibitCraftResultUpdate && Configs.Generic.MASS_CRAFT_INHIBIT_MID_UPDATES.getBooleanValue())
-        {
-            return;
-        }
+//        if (inhibitCraftResultUpdate && Configs.Generic.MASS_CRAFT_INHIBIT_MID_UPDATES.getBooleanValue())
+//        {
+//            return;
+//        }
 
         if (Configs.Generic.CLIENT_CRAFTING_FIX.getBooleanValue())
         {
@@ -1688,31 +1687,39 @@ public class InventoryUtils
 
             for (int i = 0, slotNum = range.getFirst(); i < rangeSlots && slotNum < invSlots; i++, slotNum++)
             {
-                Slot slotTmp = gui.getScreenHandler().getSlot(slotNum);
+                Slot craftingTableSlot = gui.getScreenHandler().getSlot(slotNum);
                 ItemStack recipeStack = recipeItems[i];
-                ItemStack slotStack = slotTmp.getStack();
-                boolean recipeHasItem = isStackEmpty(recipeStack) == false;
+                ItemStack slotStack = craftingTableSlot.getStack();
 
                 if (areStacksEqual(recipeStack, slotStack) == false)
                 {
-                    if (recipeHasItem == false)
+                    if (recipeStack.isEmpty())
                     {
                         toRemove.add(slotNum);
                     }
                     else
                     {
-                        int index = getPlayerInventoryIndexWithItem(recipeStack, inv);
+                        int index = getSlotNumberOfLargestMatchingStackFromDifferentInventory(gui.getScreenHandler(), craftingTableSlot, recipeStack);
 
                         if (index >= 0)
                         {
-                            clickSlot(gui, slotNum, index, SlotActionType.SWAP);
+                            Slot ingredientSlot = gui.getScreenHandler().getSlot(index);
+                            if (ingredientSlot.inventory instanceof PlayerInventory && ingredientSlot.getIndex() < 9)
+                            {
+                                // hotbar
+                                clickSlot(gui, slotNum, ingredientSlot.getIndex(), SlotActionType.SWAP);
+                            }
+                            else
+                            {
+                                swapSlots(gui, slotNum, index);
+                            }
                             movedSomething = true;
                         }
                     }
                 }
             }
 
-            movedSomething |= (toRemove.isEmpty() == false);
+            movedSomething |= !toRemove.isEmpty();
 
             for (int slotNum : toRemove)
             {
@@ -3034,9 +3041,9 @@ public class InventoryUtils
 
     public static void swapSlots(HandledScreen<? extends ScreenHandler> gui, int slotNum, int otherSlot)
     {
-        clickSlot(gui, slotNum, 0, SlotActionType.SWAP);
-        clickSlot(gui, otherSlot, 0, SlotActionType.SWAP);
-        clickSlot(gui, slotNum, 0, SlotActionType.SWAP);
+        clickSlot(gui, slotNum, 8, SlotActionType.SWAP);
+        clickSlot(gui, otherSlot, 8, SlotActionType.SWAP);
+        clickSlot(gui, slotNum, 8, SlotActionType.SWAP);
     }
 
     private static void dragSplitItemsIntoSlots(HandledScreen<? extends ScreenHandler> gui,
