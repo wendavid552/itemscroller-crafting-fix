@@ -234,8 +234,8 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                         InventoryUtils.throwAllCraftingResultsToGround(recipe, gui);
                         InventoryUtils.throwAllNonRecipeItemsToGround(recipe, gui);
                         RecipeInputInventory inv = ((IMixinCraftingResultSlot) (outputSlot)).itemscroller_getCraftingInventory();
-                        System.out.println("Before:");
-                        debugPrintInv(inv);
+                        //System.out.println("Before:");
+                        //debugPrintInv(inv);
                         try
                         {
                             Thread.sleep(0);
@@ -243,12 +243,12 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                         {
                         }
                         InventoryUtils.setCraftingGridContentsUsingSwaps(gui, mc.player.getInventory(), recipe, outputSlot);
-                        System.out.println("After:");
-                        debugPrintInv(inv);
+                        //System.out.println("After:");
+                        //debugPrintInv(inv);
                         InventoryUtils.setInhibitCraftingOutputUpdate(false);
                         InventoryUtils.updateCraftingOutputSlot(outputSlot);
 
-                        System.out.printf("Output slot: %s\n", outputSlot.getStack());
+                        //System.out.printf("Output slot: %s\n", outputSlot.getStack());
 
                         if (InventoryUtils.areStacksEqual(outputSlot.getStack(), recipe.getResult()) == false)
                         {
@@ -256,8 +256,8 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                         }
 
                         InventoryUtils.shiftClickSlot(gui, outputSlot.id);
-                        System.out.println("Shift clicked");
-                        debugPrintInv(inv);
+                        //System.out.println("Shift clicked");
+                        //debugPrintInv(inv);
                     }
                 }
                 else

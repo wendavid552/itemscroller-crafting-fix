@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayNetworkHandler.class)
 public class MixinServerPlayNetworkHandler
 {
+    /*
     @Shadow public ServerPlayerEntity player;
 
     @Inject(method = "onClickSlot", at = @At(value = "JUMP", opcode = Opcodes.IFEQ, ordinal = 2))
@@ -28,4 +29,5 @@ public class MixinServerPlayNetworkHandler
             }
         }
     }
+     */
 }

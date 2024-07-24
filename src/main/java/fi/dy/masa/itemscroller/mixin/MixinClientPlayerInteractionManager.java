@@ -29,6 +29,7 @@ public class MixinClientPlayerInteractionManager
             target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V"))
     private void bufferClickPacketsAndCancel(ClientPlayNetworkHandler netHandler, Packet<?> packet)
     {
+        /*
         if (packet instanceof ClickSlotC2SPacket clickPacket)
         {
             MinecraftClient mc = MinecraftClient.getInstance();
@@ -36,6 +37,7 @@ public class MixinClientPlayerInteractionManager
             clickPacket.getModifiedStacks().forEach((integer, stack) -> System.out.printf("%d = %s, ", integer, stack));
             System.out.println();
         }
+         */
         if (ClickPacketBuffer.shouldBufferClickPackets())
         {
             ClickPacketBuffer.bufferPacket(packet);
