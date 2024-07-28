@@ -55,7 +55,7 @@ public class RecipePattern
         this.clearRecipe();
     }
 
-    private void lookupVanillaRecipe(World world) {
+    public void lookupVanillaRecipe(World world) {
         this.vanillaRecipe = null;
         var mc = MinecraftClient.getInstance();
         int recipeSize;
@@ -152,7 +152,6 @@ public class RecipePattern
             }
 
             this.result = ItemStack.fromNbtOrEmpty(registryManager, nbt.getCompound("Result"));
-            this.lookupVanillaRecipe(MinecraftClient.getInstance().world);
         }
     }
 
