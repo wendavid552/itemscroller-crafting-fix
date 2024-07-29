@@ -227,13 +227,10 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                 }
 
                 RecipePattern recipe = RecipeStorage.getInstance().getSelectedRecipe();
-                if (recipe.getVanillaRecipe() == null) {
-                    recipe.lookupVanillaRecipe(mc.world);
-                }
 
                 int limit = Configs.Generic.MASS_CRAFT_ITERATIONS.getIntegerValue();
 
-                if (Configs.Generic.MASS_CRAFT_RECIPE_BOOK.getBooleanValue() && recipe.getVanillaRecipe() != null)
+                if (Configs.Generic.MASS_CRAFT_RECIPE_BOOK.getBooleanValue() && recipe.lookupVanillaRecipe(mc.world) != null)
                 {
                     InventoryUtils.dontUpdateRecipeBook = true;
                     for (int i = 0; i < limit; ++i)
