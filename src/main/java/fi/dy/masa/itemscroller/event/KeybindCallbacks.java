@@ -194,6 +194,9 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
     @Override
     public void onClientTick(MinecraftClient mc)
     {
+        if (InventoryUtils.dontUpdateRecipeBook > 0) {
+            --InventoryUtils.dontUpdateRecipeBook;
+        }
         if (this.functionalityEnabled() == false || mc.player == null)
         {
             return;
@@ -232,7 +235,7 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
 
                 if (Configs.Generic.MASS_CRAFT_RECIPE_BOOK.getBooleanValue() && recipe.lookupVanillaRecipe(mc.world) != null)
                 {
-                    InventoryUtils.dontUpdateRecipeBook = true;
+                    InventoryUtils.dontUpdateRecipeBook = 10;
                     for (int i = 0; i < limit; ++i)
                     {
                         // todo
@@ -273,7 +276,6 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                         InventoryUtils.shiftClickSlot(gui, outputSlot.id);
                         recipeBookClicks = true;
                     }
-                    InventoryUtils.dontUpdateRecipeBook = false;
                 }
                 else if (Configs.Generic.MASS_CRAFT_SWAPS.getBooleanValue())
                 {

@@ -14,7 +14,16 @@ public class MixinRecipeBookWidget
     @Inject(method = "slotClicked", at = @At("HEAD"), cancellable = true)
     private void onSlotClicked(Slot slot, CallbackInfo ci)
     {
-        if (InventoryUtils.dontUpdateRecipeBook)
+        if (InventoryUtils.dontUpdateRecipeBook > 0)
+        {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "update", at = @At("HEAD"), cancellable = true)
+    private void onUpdate(CallbackInfo ci)
+    {
+        if (InventoryUtils.dontUpdateRecipeBook > 0)
         {
             ci.cancel();
         }
