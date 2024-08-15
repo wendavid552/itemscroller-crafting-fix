@@ -28,4 +28,14 @@ public class MixinRecipeBookWidget
             ci.cancel();
         }
     }
+
+    @Inject(method = "drawGhostSlots", at = @At("HEAD"), cancellable = true)
+    private void onDrawGhostSlots(CallbackInfo ci)
+    {
+        if (InventoryUtils.dontUpdateRecipeBook > 0)
+        {
+            ci.cancel();
+        }
+    }
+
 }
