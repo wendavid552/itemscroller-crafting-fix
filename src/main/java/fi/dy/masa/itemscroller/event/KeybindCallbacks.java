@@ -235,7 +235,7 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
 
                 if (Configs.Generic.MASS_CRAFT_RECIPE_BOOK.getBooleanValue() && recipe.lookupVanillaRecipe(mc.world) != null)
                 {
-                    InventoryUtils.dontUpdateRecipeBook = 10;
+                    InventoryUtils.dontUpdateRecipeBook = 2;
                     for (int i = 0; i < limit; ++i)
                     {
                         // todo
